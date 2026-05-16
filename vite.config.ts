@@ -8,27 +8,11 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
-export default defineConfig(async ({ command }) => {
-  const plugins: unknown[] = [];
-
-  // Only require Nitro for production builds (eg. Vercel).
-  // Keep `npm run dev` working even if deps haven't been installed yet.
-  if (command === "build") {
-    try {
-      const { nitro } = await import("nitro/vite");
-      plugins.push(nitro());
-    } catch {
-      // Nitro is required for Vercel SSR builds, but optional for local dev.
-    }
-  }
-
-  return {
-    plugins,
-    // This repo includes Cloudflare Workers wiring (wrangler.jsonc), but when deploying to
-    // Vercel we must not enable the Cloudflare Vite plugin during `vite build`.
-    cloudflare: false,
-    tanstackStart: {
-      server: { entry: "server" },
-    },
-  };
+export default defineConfig({
+  // This repo includes Cloudflare Workers wiring (wrangler.jsonc), but when deploying to
+  // Vercel we must not enable the Cloudflare Vite plugin during `vite build`.
+  cloudflare: false,
+  tanstackStart: {
+    server: { entry: "server" },
+  },
 });
